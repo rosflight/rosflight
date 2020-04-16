@@ -82,8 +82,6 @@
 #include <rosflight/mavrosflight/mavlink_listener_interface.h>
 #include <rosflight/mavrosflight/param_listener_interface.h>
 
-#include <geometry_msgs/Quaternion.h>
-
 namespace rosflight_io
 {
 
@@ -106,6 +104,11 @@ public:
   static constexpr float PARAMETER_PERIOD = 3; //Time between parameter requests
 
 private:
+
+  // the three functions to handle quaternions
+  static void normalize_quat(double &w, double &x, double &y, double &z);
+  static void convert_quat_to_euler(double w, double x, double y, double z, double &roll, double &pitch, double &yaw);
+  static void fill_quat_message(double q1, double q2, double q3, double q4, geometry_msgs::msg::Quaternion &q);
 
   // handle mavlink messages
   void handle_heartbeat_msg(const mavlink_message_t &msg);
