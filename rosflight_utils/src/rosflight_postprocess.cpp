@@ -259,7 +259,7 @@ int main(int argc, char * argv[])
                           cmd->x,
                           cmd->y,
                           cmd->z,
-                          cmd->F};
+                          cmd->throttle};
       cmd_log.write((char*)cmdarr, sizeof(cmdarr));
     }
   }
@@ -267,5 +267,3 @@ int main(int argc, char * argv[])
   std::cout << std::endl;
 }
 #pragma GCC diagnostic pop
-
-
