@@ -48,7 +48,7 @@
 #include <string>
 #include <vector>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 namespace mavrosflight
 {
@@ -56,6 +56,7 @@ namespace mavrosflight
 class ParamManager : public MavlinkListenerInterface
 {
 public:
+  // ParamManager(MavlinkComm * const comm, std::shared_ptr<rclcpp::Node> nh);
   ParamManager(MavlinkComm * const comm);
   ~ParamManager();
 
@@ -103,11 +104,13 @@ private:
   bool *received_;
   bool got_all_params_;
 
-  ros::NodeHandle nh_;
+  // ros::NodeHandle nh_;
   std::deque<mavlink_message_t> param_set_queue_;
   ros::Timer param_set_timer_;
   bool param_set_in_progress_;
   void param_set_timer_callback(const ros::TimerEvent &event);
+
+  rclcpp::Clock ros_clock_;
 };
 
 } // namespace mavrosflight

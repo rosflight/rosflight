@@ -50,6 +50,8 @@
 #include <stdint.h>
 #include <string>
 
+// #include <rclcpp/rclcpp.hpp>
+
 namespace mavrosflight
 {
 
@@ -62,6 +64,7 @@ public:
    * \param mavlink_comm Reference to a MavlinkComm object (serial or UDP)
    * \param baud_rate Serial communication baud rate
    */
+  // MavROSflight(MavlinkComm& mavlink_comm, std::shared_ptr<rclcpp::Node> nh, uint8_t sysid = 1, uint8_t compid = 50);
   MavROSflight(MavlinkComm& mavlink_comm, uint8_t sysid = 1, uint8_t compid = 50);
 
   /**

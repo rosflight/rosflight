@@ -35,7 +35,7 @@
  */
 
 #include <rosflight/mavrosflight/param_manager.h>
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <yaml-cpp/yaml.h>
 
 #include <fstream>
@@ -43,8 +43,10 @@
 namespace mavrosflight
 {
 
+// ParamManager::ParamManager(MavlinkComm * const comm, std::shared_ptr<rclcpp::Node> nh) :
 ParamManager::ParamManager(MavlinkComm * const comm) :
   comm_(comm),
+  // nh_(nh),
   unsaved_changes_(false),
   write_request_in_progress_(false),
   first_param_received_(false),
@@ -54,7 +56,8 @@ ParamManager::ParamManager(MavlinkComm * const comm) :
 {
   comm_->register_mavlink_listener(this);
 
-  param_set_timer_ = nh_.createTimer(ros::Duration(ros::Rate(100)),
+  // param_set_timer_ = nh_->createTimer(ros::Duration(rclcpp::Rate(100)),
+  param_set_timer_ = nh_.createTimer(ros::Duration(rclcpp::Rate(100)),
                                      &ParamManager::param_set_timer_callback, this,
                                      false, /* not oneshot */
                                      false /* not autostart */);

@@ -36,15 +36,17 @@
 
 #include <rosflight/mavrosflight/mavrosflight.h>
 
-#include <ros/ros.h>
+// #include <rclcpp/rclcpp.hpp>
 
 namespace mavrosflight
 {
 
 using boost::asio::serial_port_base;
 
+// MavROSflight::MavROSflight(MavlinkComm &mavlink_comm, std::shared_ptr<rclcpp::Node> nh, uint8_t sysid /* = 1 */, uint8_t compid /* = 50 */) :
 MavROSflight::MavROSflight(MavlinkComm &mavlink_comm, uint8_t sysid /* = 1 */, uint8_t compid /* = 50 */) :
   comm(mavlink_comm),
+  // param(&comm, nh),
   param(&comm),
   time(&comm),
   sysid_(sysid),

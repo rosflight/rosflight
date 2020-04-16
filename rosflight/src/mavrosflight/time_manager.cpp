@@ -34,27 +34,36 @@
  * \author Daniel Koch <daniel.koch@byu.edu>
  */
 
+// #include <rclcpp/rclcpp.hpp>
+
 #include <rosflight/mavrosflight/time_manager.h>
 
 namespace mavrosflight
 {
 
+// TimeManager::TimeManager(MavlinkComm *comm, std::shared_ptr<rclcpp::Node> nh) :
 TimeManager::TimeManager(MavlinkComm *comm) :
   comm_(comm),
+  // nh_(nh),
   offset_alpha_(0.95),
   offset_ns_(0),
   offset_(0.0),
   initialized_(false)
 {
+
+  _ros_clock(RCL_ROS_TIME)
+
   comm_->register_mavlink_listener(this);
 
-  ros::NodeHandle nh;
-  time_sync_timer_ = nh.createTimer(ros::Duration(ros::Rate(10)), &TimeManager::timer_callback, this);
+  // ros::NodeHandle nh;
+  time_sync_timer_ = nh.createTimer(ros::Duration(rclcpp::Rate(10)), &TimeManager::timer_callback, this);
+  // ros::NodeHandle nh;
+  // time_sync_timer_ = nh->createTimer(ros::Duration(rclcpp::Rate(10)), &TimeManager::timer_callback, this);
 }
 
 void TimeManager::handle_mavlink_message(const mavlink_message_t &msg)
 {
-  int64_t now_ns = ros::Time::now().toNSec();
+  int64_t now_ns = _ros_clock.now().nanoseconds();
 
   if (msg.msgid == MAVLINK_MSG_ID_TIMESYNC)
   {
@@ -83,7 +92,7 @@ void TimeManager::handle_mavlink_message(const mavlink_message_t &msg)
 ros::Time TimeManager::get_ros_time_ms(uint32_t boot_ms)
 {
   if (!initialized_)
-    return ros::Time::now();
+    return _ros_clock.now();
 
   int64_t boot_ns = (int64_t)boot_ms*1000000;
 
@@ -92,7 +101,7 @@ ros::Time TimeManager::get_ros_time_ms(uint32_t boot_ms)
   {
     ROS_ERROR_THROTTLE(1, "negative time calculated from FCU: boot_ns=%ld, offset_ns=%ld.  Using system time",
               boot_ns, offset_ns_);
-    return ros::Time::now();
+    return _ros_clock.now();
   }
   ros::Time now;
   now.fromNSec(ns);
@@ -102,7 +111,7 @@ ros::Time TimeManager::get_ros_time_ms(uint32_t boot_ms)
 ros::Time TimeManager::get_ros_time_us(uint64_t boot_us)
 {
   if (!initialized_)
-    return ros::Time::now();
+    return _ros_clock.now();
 
   int64_t boot_ns = (int64_t) boot_us * 1000;
 
@@ -111,7 +120,7 @@ ros::Time TimeManager::get_ros_time_us(uint64_t boot_us)
   {
     ROS_ERROR_THROTTLE(1, "negative time calculated from FCU: boot_ns=%ld, offset_ns=%ld.  Using system time",
               boot_ns, offset_ns_);
-    return ros::Time::now();
+    return _ros_clock.now();
   }
   ros::Time now;
   now.fromNSec(ns);
@@ -121,7 +130,7 @@ ros::Time TimeManager::get_ros_time_us(uint64_t boot_us)
 void TimeManager::timer_callback(const ros::TimerEvent &event)
 {
   mavlink_message_t msg;
-  mavlink_msg_timesync_pack(1, 50, &msg, 0, ros::Time::now().toNSec());
+  mavlink_msg_timesync_pack(1, 50, &msg, 0, _ros_clock.now().nanoseconds());
   comm_->send_message(msg);
 }
 
