@@ -38,12 +38,12 @@
 #ifndef ROSFLIGHT_SENSORS_CALBRATE_MAG_H
 #define ROSFLIGHT_SENSORS_CALBRATE_MAG_H
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <message_filters/subscriber.h>
 
-#include <rosflight_msgs/ParamSet.h>
+#include <rosflight_msgs/srv/ParamSet.hpp>
 
-#include <sensor_msgs/MagneticField.h>
+#include <sensor_msgs/msg/MagneticField.hpp>
 
 #include <eigen3/Eigen/Eigen>
 #include <math.h>
@@ -106,13 +106,13 @@ public:
 private:
   bool set_param(std::string name, double value);
 
-  ros::NodeHandle nh_;
-  ros::NodeHandle nh_private_;
+  rclcpp::NodeHandle nh_;
+  rclcpp::NodeHandle nh_private_;
 
   message_filters::Subscriber<sensor_msgs::MagneticField> mag_subscriber_;
 
-  ros::ServiceServer mag_cal_srv_;
-  ros::ServiceClient param_set_client_;
+  rclcpp::ServiceServer mag_cal_srv_;
+  rclcpp::ServiceClient param_set_client_;
 
   Eigen::MatrixXd A_, b_;
 
@@ -142,14 +142,14 @@ private:
 
   /*
       This function gets ellipsoid parameters via least squares on ellipsoidal data
-      according to the paper: Li, Qingde, and John G. Griffiths. "Least squares ellipsoid 
+      according to the paper: Li, Qingde, and John G. Griffiths. "Least squares ellipsoid
       specific fitting." Geometric modeling and processing, 2004. proceedings. IEEE, 2004.
   */
   Eigen::MatrixXd ellipsoidLS(EigenSTL::vector_Vector3d meas);
 
   /*
       This function compute magnetometer calibration parameters according to Section 5.3 of the
-      paper: Renaudin, Valérie, Muhammad Haris Afzal, and Gérard Lachapelle. "Complete triaxis 
+      paper: Renaudin, Valérie, Muhammad Haris Afzal, and Gérard Lachapelle. "Complete triaxis
       magnetometer calibration in the magnetic domain." Journal of sensors 2010 (2010).
   */
   void magCal(Eigen::MatrixXd u, Eigen::MatrixXd &A, Eigen::MatrixXd &bb);
